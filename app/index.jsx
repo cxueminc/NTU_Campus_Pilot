@@ -11,10 +11,10 @@ export default function Index() {
         
         if (!loading) {
             if (user) {
-                console.log('Index: Redirecting to map');
-                router.replace('/screen/map/map');
+                console.log('Index: Redirecting to chat screen');
+                router.replace('/screen/chat/chat');
             } else {
-                console.log('Index: Redirecting to signin');
+                console.log('Index: Redirecting to sign in screen');
                 router.replace('/authentication/signin');
             }
         }
