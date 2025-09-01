@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "ntunavapp",
     "name": "ntu_nav_app",
     "slug": "ntu_nav_app",
     "version": "1.0.0",
@@ -24,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "router": {
+      "origin": "app" 
     }
   }
 }
