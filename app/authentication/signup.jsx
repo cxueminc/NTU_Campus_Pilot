@@ -32,7 +32,7 @@ export default function SignUpScreen() {
             }
             await signUp(email, password, firstName, lastName)
             Alert.alert("Success", "Account created successfully!")
-            router.replace('/screen/map/map')
+            router.replace('/screen/chat/chat')
         } catch (error) {
             let errorMessage = "An error occurred. Please try again."
             let errorTitle = "Error"
@@ -89,7 +89,7 @@ export default function SignUpScreen() {
 
     // If user is logged in, redirect to map screen
     if (user) {
-        router.replace('/screen/map/map')
+        router.replace('/screen/chat/chat')
         return null
     }
 

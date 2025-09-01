@@ -6,11 +6,11 @@ export default function ScreenLayout() {
         <Tabs screenOptions={{ headerShown: false }}>
 
             <Tabs.Screen 
-                name="map" 
+                name="chat" 
                 options={{
-                    title: "Map", 
+                    title: "Chat", 
                     tabBarIcon: ({color, size}) => (
-                        <Ionicons name="map-outline" size={size} color={color} />
+                        <Ionicons name="chatbubble-outline" size={size} color={color} />
                     ),
                 }} 
             />

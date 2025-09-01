@@ -22,7 +22,7 @@ export default function SignInScreen() {
     const handleSignIn = async () => {
         try {
             await signIn(email, password)
-            router.replace('/screen/map/map')
+            router.replace('/screen/chat/chat')
         } catch (error) {
             let errorMessage = "An error occurred. Please try again."
             let errorTitle = "Error"
@@ -100,7 +100,7 @@ export default function SignInScreen() {
     useEffect(() => {
         // If user is logged in, redirect to map screen
         if (user) {
-            router.replace('/screen/map/map')
+            router.replace('/screen/chat/chat')
         }
     }, [user])
 
