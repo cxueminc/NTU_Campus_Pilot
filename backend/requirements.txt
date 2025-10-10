@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-community
+ollama
+pydantic>=2
+psycopg2-binary
+sqlalchemy
+python-dotenv
