@@ -32,10 +32,14 @@ npx expo start
 ```
 
 ### Features
-- Interactive campus map
-- Facility search and filtering
-- Real-time navigation
-- User authentication
+ - Interactive campus map
+ - Facility search and filtering
+ - Real-time navigation
+ - User authentication (Clerk via @clerk/clerk-expo)
+ - Secure session management (Expo SecureStore)
+ - Password reset and change flows (Clerk signIn API)
+ - Verification code entry and resend code feature for password reset
+ - Expo Router for navigation
 
 ## Backend (FastAPI)
 
@@ -68,15 +72,24 @@ uvicorn app.main:app --reload
 ### Environment Variables
 Create `.env` files in both frontend and backend directories with necessary configuration.
 
-## Testing
+#### Frontend
+- Clerk API keys and configuration (see Clerk documentation)
+- Other Expo/React Native environment variables as needed
 
-### Frontend
+#### Backend
+- Database connection settings
+- API keys for LLM providers (e.g., OpenAI)
+
+### Testing
+
+#### Frontend
 ```bash
 cd frontend
 npm test
+# Add tests for authentication and password reset flows if available
 ```
 
-### Backend
+#### Backend
 ```bash
 cd backend
 python test_api.py
