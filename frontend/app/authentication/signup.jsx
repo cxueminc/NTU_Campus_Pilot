@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
 import { useState, useEffect } from "react"
-import { useAuth } from "../../hooks/useAuth"
+import { useAuth } from "../../hooks/useClerkAuth"
 import { useRouter } from 'expo-router'
 
 export default function SignUpScreen() {
@@ -10,6 +10,8 @@ export default function SignUpScreen() {
     const [password, setPassword] = useState("")
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const [isEmailValid, setIsEmailValid] = useState(true)
+    const [emailError, setEmailError] = useState("")
 
     // Clear form when user logs out
     useEffect(() => {
@@ -18,21 +20,70 @@ export default function SignUpScreen() {
             setPassword("")
             setFirstName("")
             setLastName("")
+            setIsEmailValid(true)
+            setEmailError("")
         }
     }, [user])
+
+    // Handle navigation when user is logged in
+    useEffect(() => {
+        if (user && !loading) {
+            router.replace('/screen/chat/chat')
+        }
+    }, [user, loading, router])
+
+    // Validate NTU email domain
+    const validateNTUEmail = (email) => {
+        const ntuEmailRegex = /^[a-zA-Z0-9._%+-]+@e\.ntu\.edu\.sg$/
+        return ntuEmailRegex.test(email)
+    }
+
+    // Handle email input change with validation
+    const handleEmailChange = (inputEmail) => {
+        setEmail(inputEmail)
+        
+        if (inputEmail.trim() === "") {
+            setIsEmailValid(true)
+            setEmailError("")
+            return
+        }
+        
+        if (validateNTUEmail(inputEmail)) {
+            setIsEmailValid(true)
+            setEmailError("")
+        } else {
+            setIsEmailValid(false)
+            setEmailError("Please use your NTU email address ending with @e.ntu.edu.sg")
+        }
+    }
 
 
 
     const handleSignUp = async () => {
         try {
-            // Validate required fields for signup
+            // Validate required fields
             if (!firstName.trim() || !lastName.trim()) {
                 Alert.alert("Missing Information", "Please enter your first name and last name.")
                 return
             }
+
+            // Validate NTU email format
+            if (!validateNTUEmail(email)) {
+                Alert.alert("Invalid Email", "Please enter a valid NTU email address ending with @e.ntu.edu.sg")
+                return
+            }
+
+            // Validate password
+            if (password.length < 6) {
+                Alert.alert("Weak Password", "Password must be at least 6 characters long.")
+                return
+            }
+
             await signUp(email, password, firstName, lastName)
-            Alert.alert("Success", "Account created successfully!")
-            router.replace('/screen/chat/chat')
+            
+            // Navigate directly to verification screen without showing success popup
+            router.push('/authentication/clerk-email-verification')
+            
         } catch (error) {
             let errorMessage = "An error occurred. Please try again."
             let errorTitle = "Error"
@@ -87,9 +138,8 @@ export default function SignUpScreen() {
         )
     }
 
-    // If user is logged in, redirect to map screen
+    // Don't render signup form if user is already logged in
     if (user) {
-        router.replace('/screen/chat/chat')
         return null
     }
 
@@ -116,6 +166,15 @@ export default function SignUpScreen() {
                     
                     <Text style={styles.title}>Sign Up</Text>
                     
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoText}>
+                            📚 NTU Students Only
+                        </Text>
+                        <Text style={styles.infoSubtext}>
+                            You must use your official NTU email address to register
+                        </Text>
+                    </View>
+                    
                     <TextInput
                         style={styles.input}
                         placeholder="First Name"
@@ -133,13 +192,20 @@ export default function SignUpScreen() {
                     />
                     
                     <TextInput
-                        style={styles.input}
-                        placeholder="Email"
+                        style={[
+                            styles.input,
+                            !isEmailValid && styles.inputError
+                        ]}
+                        placeholder="NTU Email (@e.ntu.edu.sg)"
                         value={email}
-                        onChangeText={setEmail}
+                        onChangeText={handleEmailChange}
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
+                    
+                    {!isEmailValid && (
+                        <Text style={styles.errorText}>{emailError}</Text>
+                    )}
                     
                     <TextInput
                         style={styles.input}
@@ -149,7 +215,14 @@ export default function SignUpScreen() {
                         secureTextEntry
                     />
                     
-                    <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+                    <TouchableOpacity 
+                        style={[
+                            styles.button,
+                            (!isEmailValid || !email.trim() || !password.trim() || !firstName.trim() || !lastName.trim()) && styles.buttonDisabled
+                        ]} 
+                        onPress={handleSignUp}
+                        disabled={!isEmailValid || !email.trim() || !password.trim() || !firstName.trim() || !lastName.trim()}
+                    >
                         <Text style={styles.buttonText}>Sign Up</Text>
                     </TouchableOpacity>
                     
@@ -199,8 +272,26 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 30,
+        marginBottom: 20,
         color: '#333'
+    },
+    infoContainer: {
+        backgroundColor: '#e8f4f8',
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 25,
+        alignItems: 'center',
+    },
+    infoText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#2c5aa0',
+        marginBottom: 5,
+    },
+    infoSubtext: {
+        fontSize: 13,
+        color: '#555',
+        textAlign: 'center',
     },
     input: {
         width: '100%',
@@ -212,6 +303,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         backgroundColor: 'white'
     },
+    inputError: {
+        borderColor: '#ff4444',
+        borderWidth: 2,
+    },
+    errorText: {
+        color: '#ff4444',
+        fontSize: 12,
+        marginTop: -12,
+        marginBottom: 10,
+        marginLeft: 5,
+    },
     button: {
         width: '100%',
         height: 50,
@@ -220,6 +322,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15
+    },
+    buttonDisabled: {
+        backgroundColor: '#cccccc',
     },
     buttonText: {
         color: 'white',

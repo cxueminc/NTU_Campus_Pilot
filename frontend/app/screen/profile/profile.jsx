@@ -1,13 +1,37 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useClerkAuth';
+import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
 
 export default function ProfileScreen() {
-    const { user, loading, logout } = useAuth();
+
+    const { logout } = useAuth();
+    const { user, isLoaded } = useUser();
     const router = useRouter();
 
-    if (loading) {
+    // Debug: Log Clerk loaded state
+    console.log('Clerk loaded:', isLoaded);
+    // Debug: Log session persistence (user object)
+    if (isLoaded) {
+        if (user) {
+            console.log('Session is persistent. User is signed in.');
+            console.log('Logged in user info:', {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.primaryEmailAddress?.emailAddress,
+                emailVerified: user.primaryEmailAddress?.verification?.status,
+            });
+        } else {
+            console.log('No user is signed in. Session is not persistent or user is logged out.');
+        }
+    } else {
+        console.log('Clerk is still loading.');
+    }
+
+    // Show loading if Clerk hasn't loaded yet
+    if (!isLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#007AFF" />
@@ -18,9 +42,15 @@ export default function ProfileScreen() {
 
     const handleLogout = async () => {
         try {
+            if(Clerk.session) {
+                await Clerk.session.end();
+            }
+
             await logout();
+
             router.replace('/authentication/signin');
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Logout error:', error);
         }
     };
@@ -29,35 +59,42 @@ export default function ProfileScreen() {
         router.push('/screen/profile/changepwd');
     };
 
+    // Get user information directly from Clerk with better fallbacks
+    const firstName = user?.firstName || '';
+    const lastName = user?.lastName || '';
+    const displayName = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || 'Name not set');
+    const email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || 'Email not available';
+    const emailVerified = user?.primaryEmailAddress?.verification?.status === 'verified' || 
+                         user?.emailAddresses?.[0]?.verification?.status === 'verified';
+    const userId = user?.id || 'User ID not available';
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.subtitle}>
-                    Welcome! {(user?.displayName || '').toUpperCase()}
+                    Welcome! {displayName.toUpperCase()}
                 </Text>
             </View>
 
             <View style={styles.profileSection}>
                 <Text style={styles.sectionTitle}>Account Information</Text>
-                
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>{user?.email}</Text>
+                    <Text style={styles.value}>{email}</Text>
                 </View>
-                
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Display Name:</Text>
-                    <Text style={styles.value}>{user?.displayName || 'Not set'}</Text>
+                    <Text style={styles.value}>{displayName}</Text>
                 </View>
-                
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Email Verified:</Text>
-                    <Text style={styles.value}>{user?.emailVerified ? 'Yes' : 'No'}</Text>
+                    <Text style={[styles.value, { color: emailVerified ? '#4CAF50' : '#FF5722' }]}>
+                        {emailVerified ? 'Yes ✅' : 'No ❌'}
+                    </Text>
                 </View>
-                
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>User ID:</Text>
-                    <Text style={styles.value}>{user?.uid}</Text>
+                    <Text style={styles.value}>{userId}</Text>
                 </View>
             </View>
 
