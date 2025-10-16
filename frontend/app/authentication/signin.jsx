@@ -1,108 +1,60 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
 import { useState, useEffect } from "react"
-import { useAuth } from "../../hooks/useAuth"
+import { useAuth } from "../../hooks/useClerkAuth"
 import { useRouter } from 'expo-router'
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from '../../lib/firebase_config';
 
 export default function SignInScreen() {
-    const { user, loading, signIn } = useAuth()
-    const router = useRouter()
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const { user, loading, signIn } = useAuth();
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     // Clear form when user logs out
     useEffect(() => {
         if (!user) {
-            setEmail("")
-            setPassword("")
+            setEmail("");
+            setPassword("");
         }
-    }, [user])
+    }, [user]);
 
     const handleSignIn = async () => {
         try {
-            await signIn(email, password)
-            router.replace('/screen/chat/chat')
-        } catch (error) {
-            let errorMessage = "An error occurred. Please try again."
-            let errorTitle = "Error"
+            const result = await signIn(email.trim(), password);
+            router.replace('/screen/chat/chat');
+        } 
+        catch (error) {
+            console.error("Sign-in error:", error);
+
+            let errorMessage = error.message || "An error occurred. Please try again.";
+            let errorTitle = "Error";
             
-            // Handle specific Firebase Auth errors
-            switch (error.code) {
-                case 'auth/missing-email':
-                    errorTitle = "Missing Email"
-                    errorMessage = "Please enter your email."
-                    break
-                case 'auth/missing-password':
-                    errorTitle = "Missing Password"
-                    errorMessage = "Please enter your password."
-                    break
-                case 'auth/user-not-found':
-                    errorTitle = "Account Not Found"
-                    errorMessage = "Please check your email or create a new account."
-                    break
-                case 'auth/wrong-password':
-                    errorTitle = "Incorrect Password"
-                    errorMessage = "Please try again."
-                    break
-                case 'auth/invalid-credential':
-                    errorTitle = "Invalid Email/Password"
-                    errorMessage = "Please check your credentials and try again."
-                    break
-                case 'auth/invalid-email':
-                    errorTitle = "Invalid Email"
-                    errorMessage = "Please enter a valid email."
-                    break
-                case 'auth/too-many-requests':
-                    errorTitle = "Too Many Requests"
-                    errorMessage = "Too many failed attempts. Please try again later."
-                    break
-                case 'auth/network-request-failed':
-                    errorTitle = "Network Error"
-                    errorMessage = "Please check your internet connection."
-                    break
-                default:
-                    errorMessage = error.message || "An error occurred. Please try again."
+            // Handle email verification error specifically
+            if (errorMessage.includes('verify your email')) {
+                errorTitle = "Please Verify Your Email First";
+                errorMessage = "Check your NTU inbox for the verification email and complete verification before signing in.";
+            }
+            else if (errorMessage.includes('Incorrect password')){
+                errorTitle = "Incorrect Password";
+            }
+            else if (errorMessage.includes('No account found')){
+                errorTitle = "No Account Found";
             }
             
-            Alert.alert(errorTitle, errorMessage)
+            Alert.alert(errorTitle, errorMessage);
         }
     }
 
     const navigateToSignUp = () => {
-        router.push('/authentication/signup')
+        router.push('/authentication/signup');
     }
 
-    const handleForgotPassword = async () => {
-        if (!email) {
-            Alert.alert("Error", "Please enter your email to reset your password.")
-            return
-        }
-        try {
-            await sendPasswordResetEmail(auth, email)
-            Alert.alert("Success", "Password reset email sent. Please check your inbox.")
-        } catch (error) {
-            let errorMessage = "An error occurred. Please try again."
-            switch (error.code) {
-                case 'auth/user-not-found':
-                    errorMessage = "No account found with this email."
-                    break
-                case 'auth/invalid-email':
-                    errorMessage = "Please enter a valid email address."
-                    break
-                default:
-                    errorMessage = error.message || "An error occurred. Please try again."
-            }
-            Alert.alert("Error", errorMessage)
-        }
-    }
 
     useEffect(() => {
         // If user is logged in, redirect to map screen
         if (user) {
-            router.replace('/screen/chat/chat')
+            router.replace('/screen/chat/chat');
         }
-    }, [user])
+    }, [user]);
 
     if (loading) {
         return (
@@ -163,7 +115,7 @@ export default function SignInScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => router.push("/authentication/forgotpwd")}>
-  <                     Text style={{ color: "#007AFF", marginBottom: 15 }}>
+                        <Text style={{ color: "#007AFF", marginBottom: 15 }}>
                             Forgot password?
                         </Text>
                     </TouchableOpacity>
