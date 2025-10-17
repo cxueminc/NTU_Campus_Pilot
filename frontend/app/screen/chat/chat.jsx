@@ -132,7 +132,7 @@ export default function ChatScreen() {
           role: msg.mine ? "user" : "assistant",
           content: msg.text
         }))
-        .slice(-10); // Keep last 10 messages for context (limit to prevent token overflow)
+        .slice(-20); // Keep last 20 messages for context (limit to prevent token overflow)
 
       // Backend expects: { message: string, conversation_history?: array, max_results?: number }
       const requestPayload = {
@@ -178,7 +178,8 @@ export default function ChatScreen() {
       if (data.response) {
         chatbotReply = data.response;
         console.log("✅ Using backend AI response");
-      } else {
+      }
+      else {
         chatbotReply = "Sorry, I couldn't process your request. Please try again.";
         console.log("❌ No response field found in backend data");
       }
