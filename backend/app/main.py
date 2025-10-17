@@ -201,9 +201,10 @@ def get_vector_database_stats():
     try:
         stats = semantic_chat.vector_db.get_collection_stats()
         return VectorStatsResponse(
-            total_facilities=stats['total_facilities'],
-            collection_name=stats['collection_name'],
-            is_available=True
+            total_documents=stats['total_facilities'],
+            collections=stats['collection_name'],
+            is_available=True,
+            sample_documents=stats.get('sample_facilities   ', [])
         )
         
     except Exception as e:

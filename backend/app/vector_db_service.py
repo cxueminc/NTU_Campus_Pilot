@@ -221,16 +221,24 @@ class FacilityVectorDB:
     
     def get_collection_stats(self) -> Dict[str, Any]:
         """Get statistics about the vector database"""
-        count = self.collection.count()
         
-        # Get sample data
-        sample = self.collection.peek(limit=5)
-        
-        return {
-            'total_facilities': count,
-            'collection_name': self.collection.name,
-            'sample_facilities': [meta['name'] for meta in sample['metadatas']] if sample['metadatas'] else []
-        }
+        try:
+            count = self.collection.count() or 0
+            sample = self.collection.peek(limit=5) or {'metadatas': []} 
+            
+            metadatas = sample.get('metadatas', [])
+            sample_names = []
+            if metadatas and isinstance(metadatas, list):
+                sample_names = [m.get('name', 'Unnamed') for m in metadatas if isinstance(m, dict)]
+
+            return {
+                'total_facilities': count,
+                'collection_name': self.collection.name,
+                'sample_facilities': sample_names
+            }
+        except Exception as e:
+            print(f"Error retrieving collection stats: {e}")
+            raise e
     
     def reset_database(self):
         """Clear all data from the vector database"""
