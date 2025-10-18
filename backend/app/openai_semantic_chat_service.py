@@ -354,19 +354,19 @@ class OpenAISemanticChatService:
                 monitor = attrs.get('monitor', 'No')
                 details.append(f"Monitor Available: {monitor}")
                
-                quiet_policy = attrs.get('quiet_policy', 'Unknown')
+                quiet_policy = attrs.get('quiet_policy', 'N/A')
                 details.append(f"Quiet Policy: {quiet_policy}")
                 
-                power_outlets = attrs.get('power_outlets', 'Unknown')
+                power_outlets = attrs.get('power_outlets', 'N/A')
                 details.append(f"Power Outlets: {power_outlets}")
                 
                 cuisine = attrs.get('cuisine', 'N/A')
                 details.append(f"Cuisine: {cuisine}")
                 
-                dine_in = attrs.get('dine_in', 'Unknown')
+                dine_in = attrs.get('dine_in', 'N/A')
                 details.append(f"Dine-In Available: {dine_in}")
                 
-                takeaway = attrs.get('takeaway_friendly', 'Unknown')
+                takeaway = attrs.get('takeaway_friendly', 'N/A')
                 details.append(f"Takeaway Available: {takeaway}")
                 
                 dish_style = attrs.get('dish_style', 'N/A')
@@ -375,13 +375,13 @@ class OpenAISemanticChatService:
                 dietry_label = attrs.get('dietary_label', 'N/A')
                 details.append(f"Dietary Label: {dietry_label}")    
                
-                takeaway_friendly = attrs.get('takeaway_friendly', 'Unknown')
+                takeaway_friendly = attrs.get('takeaway_friendly', 'N/A')
                 details.append(f"Takeaway Available: {takeaway_friendly}")
                
-                serves_breakfast = attrs.get('serves_breakfast', 'Unknown')
+                serves_breakfast = attrs.get('serves_breakfast', 'N/A')
                 details.append(f"Serve Breakfast: {serves_breakfast}")
 
-                healthy_options_available = attrs.get('healthy_options_available', 'Unknown')
+                healthy_options_available = attrs.get('healthy_options_available', 'N/A')
                 details.append(f"Healthy Option Available: {healthy_options_available}")
             
             facility_details.append(" | ".join(details))
@@ -601,12 +601,12 @@ class OpenAISemanticChatService:
         for facility in db_facilities:
             processed = {
                 'id': facility.get('id'),
+                'code': facility.get('code'),
                 'name': facility.get('name'),
                 'type': facility.get('type'),
                 'building': facility.get('building'),
                 'floor': facility.get('floor'),
                 'unit_number': facility.get('unit_number'),
-                'code': facility.get('code'),
                 'attrs': facility.get('attrs', {}),
                 'open_time': str(facility.get('open_time')) if facility.get('open_time') else '',
                 'close_time': str(facility.get('close_time')) if facility.get('close_time') else '',
