@@ -162,7 +162,8 @@ def load_facilities_to_vector_db(db: Session = Depends(get_db)):
                 'open_days': facility.open_days or [],
                 'open_time': str(facility.open_time) if facility.open_time else None,
                 'close_time': str(facility.close_time) if facility.close_time else None,
-                'unit_number': facility.unit_number
+                'unit_number': facility.unit_number,
+                'map_url': facility.map_url
             }
             facilities_data.append(facility_dict)
         
