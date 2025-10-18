@@ -161,7 +161,8 @@ def load_facilities_to_vector_db(db: Session = Depends(get_db)):
                 'attrs': facility.attrs or {},
                 'open_days': facility.open_days or [],
                 'open_time': str(facility.open_time) if facility.open_time else None,
-                'close_time': str(facility.close_time) if facility.close_time else None
+                'close_time': str(facility.close_time) if facility.close_time else None,
+                'unit_number': facility.unit_number
             }
             facilities_data.append(facility_dict)
         
@@ -171,6 +172,7 @@ def load_facilities_to_vector_db(db: Session = Depends(get_db)):
         return LoadFacilitiesResponse(
             message="Facilities replaced successfully in vector database",
             total_loaded=len(facilities_data),
+            facilities_loaded=facilities_data[:10],
             vector_db_initialized=True
         )
         

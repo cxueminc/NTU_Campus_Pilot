@@ -22,8 +22,7 @@ def load_facilities():
             data = response.json()
             print("✅ SUCCESS! Facilities loaded successfully!")
             print(f"📝 Message: {data.get('message', 'No message')}")
-            print(f"📊 Total Facilities: {data.get('total_facilities', 'Unknown')}")
-            print(f"⏱️  Processing Time: {data.get('processing_time_seconds', 'Unknown')} seconds")
+            print(f"📊 Total Facilities: {data.get('total_loaded', 'Unknown')}")
             
             # Show some details if available
             if 'facilities_loaded' in data:
