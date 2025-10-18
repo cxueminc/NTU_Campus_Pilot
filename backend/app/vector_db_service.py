@@ -137,7 +137,7 @@ class FacilityVectorDB:
             metadatas.append(metadata)
             ids.append(f"facility_{facility.get('id', len(ids))}")
         
-        # Add to ChromaDB
+        # Add to ChromaDB & convert data into vectors
         self.collection.add(
             documents=documents,
             metadatas=metadatas,
