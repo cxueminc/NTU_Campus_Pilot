@@ -340,7 +340,8 @@ class OpenAISemanticChatService:
                 f"Unit Number: {facility.get('unit_number', 'Unknown')}",
                 f"Open Time: {facility.get('open_time', 'N/A')}",
                 f"Close Time: {facility.get('close_time', 'N/A')}",
-                f"Open Days: {', '.join(facility.get('open_days', [])) if facility.get('open_days') else 'N/A'}"
+                f"Open Days: {', '.join(facility.get('open_days', [])) if facility.get('open_days') else 'N/A'}",
+                f"map_url: {facility.get('map_url', 'Not Found')}"
             ]
             
             attrs = facility.get('attrs', {})
@@ -429,13 +430,15 @@ class OpenAISemanticChatService:
             RESPONSE REQUIREMENTS:
             • Give seamless, integrated recommendations using all your knowledge domains
             • Don't say "from database" or "from my knowledge" - just give the best expert advice
-            • Only name facilities that are in the AVAILABLE FACILITIES list; if using general knowledge, speak in categories (e.g., "food court options", "salad/grill stalls")
+            • Only name facilities that are in the AVAILABLE FACILITIES list; if using general knowledge, speak in categories (e.g., "food court options", "study pods")
             • Apply your general knowledge to critically evaluate database suggestions
             • Lead with the most appropriate recommendations based on quality and suitability
             • Show only relevant operating hours for the queried day
             • Completely ignore inappropriate or closed facilities
             • For food queries: Prioritize actual FOOD places over beverage shops
             • Sound natural and conversational like a knowledgeable friend helping out
+            • **If a facility includes a `map_url` (navigation link), include it in your response as a clickable link at the end of that facility’s description (e.g., “📍 [View on map](https://maps.ntu.edu.sg/...)”).**
+            • Do not fabricate links; only include them when the `map_url` field is provided.
 
             Today's Context: {query_day if query_day else 'Current day'} - only show information relevant to this day."""
         
@@ -610,7 +613,8 @@ class OpenAISemanticChatService:
                 'attrs': facility.get('attrs', {}),
                 'open_time': str(facility.get('open_time')) if facility.get('open_time') else '',
                 'close_time': str(facility.get('close_time')) if facility.get('close_time') else '',
-                'open_days': facility.get('open_days', [])
+                'open_days': facility.get('open_days', []),
+                'map_url': facility.get('map_url', '')
             }
             processed_facilities.append(processed)
         

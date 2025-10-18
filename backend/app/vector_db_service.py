@@ -131,7 +131,8 @@ class FacilityVectorDB:
                 'close_time': str(facility.get('close_time') or ''),
                 'open_days': json.dumps(facility.get('open_days') or []),
                 'attrs': json.dumps(facility.get('attrs') or {}),
-                'code': str(facility.get('code') or '')
+                'code': str(facility.get('code') or ''),
+                'map_url': str(facility.get('map_url') or '')
             }
             metadatas.append(metadata)
             ids.append(f"facility_{facility.get('id', len(ids))}")
@@ -175,6 +176,7 @@ class FacilityVectorDB:
                     'open_days': json.loads(metadata['open_days']),
                     'attrs': json.loads(metadata['attrs']),
                     'code': metadata['code'],
+                    'map_url': metadata['map_url'],
                     'distance': distance,  # Use distance directly
                     'matched_text': results['documents'][0][i]
                 }
@@ -202,7 +204,8 @@ class FacilityVectorDB:
             'close_time': str(facility.get('close_time', '')),
             'open_days': json.dumps(facility.get('open_days', [])),
             'attrs': json.dumps(facility.get('attrs', {})),
-            'code': facility.get('code', '')
+            'code': facility.get('code', ''),
+            'map_url': facility.get('map_url', '')
         }
         
         # Update in ChromaDB

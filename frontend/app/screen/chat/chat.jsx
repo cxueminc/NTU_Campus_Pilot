@@ -12,6 +12,9 @@ import {
 } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import Markdown from 'react-native-markdown-display';
+import { Linking } from 'react-native';
+
 
 export default function ChatScreen() {
   // Backend API configuration from environment variables
@@ -258,7 +261,16 @@ export default function ChatScreen() {
                 item.mine ? styles.bubbleMine : styles.bubbleOther,
               ]}
             >
-              <Text style={styles.text}>{item.text}</Text>
+              <Markdown
+                style={{
+                  body: { color: '#000', fontSize: 16 },
+                  link: { color: '#007AFF', textDecorationLine: 'underline' },
+                }}
+                onLinkPress={(url) => Linking.openURL(url)}
+              >
+                {item.text}
+              </Markdown>
+
             </View>
           )}
         />

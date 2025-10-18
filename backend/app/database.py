@@ -31,6 +31,7 @@ class Facility(Base):
     close_time = Column(Time, nullable=True)
     open_days = Column(ARRAY(String), nullable=True)
     unit_number = Column(Text, nullable=True)
+    map_url = Column(Text, nullable=True)
 
     class Config:
         from_attributes = True  # For Pydantic v2 compatibility
