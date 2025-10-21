@@ -1,6 +1,6 @@
-# NTU Navigation App
+# NTU Facility Recommendation App
 
-A comprehensive navigation and facility finder application for Nanyang Technological University.
+A chatbot-based campus assistant that provides personalized facility recommendations and navigation support for Nanyang Technological University.
 
 ## Project Structure
 
